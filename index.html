@@ -870,8 +870,10 @@
                     welcomeScreen.style.display = 'none';
                     nameScreen.style.display = 'flex';
                     
-                    // Focus on name input
+                    // Setup name input after screen is shown
                     setTimeout(() => {
+                        window.setupNameInput();
+                        
                         const nameInput = document.getElementById('user-name-input');
                         if (nameInput) {
                             nameInput.focus();
@@ -2243,7 +2245,7 @@
                     </div>
                 </div>
                 
-                <button class="splash-continue-btn" onclick="saveName()" id="name-continue-btn" disabled>
+                <button class="splash-continue-btn" onclick="window.saveName()" id="name-continue-btn">
                     Continue
                 </button>
                 
