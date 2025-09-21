@@ -902,6 +902,22 @@
 
         window.saveName = function() {
             console.log('Saving name...');
+            
+            // Ensure userState exists
+            if (!window.userState) {
+                console.log('userState not found, creating new one');
+                window.userState = {
+                    userName: '',
+                    isFirstTime: true,
+                    points: 0,
+                    scanCount: 0,
+                    level: 'FRESH',
+                    preferences: [],
+                    streak: 1,
+                    pantryItems: []
+                };
+            }
+            
             const nameInput = document.getElementById('user-name-input');
             const name = nameInput ? nameInput.value.trim() : '';
             
@@ -2246,7 +2262,7 @@
                     </div>
                 </div>
                 
-                <button class="splash-continue-btn" onclick="alert('Button clicked!'); window.saveName();" id="name-continue-btn" style="pointer-events: auto; z-index: 9999;">
+                <button class="splash-continue-btn" onclick="window.saveName();" id="name-continue-btn" style="pointer-events: auto; z-index: 9999;">
                     Continue
                 </button>
                 
