@@ -1,4 +1,4 @@
-        <!-- PANTRY VIEW with Floating Bubbles -->
+<!-- PANTRY VIEW with Floating Bubbles -->
         <div id="pantry" class="view">
             <div class="content">
                 <div class="hero-text">
@@ -849,6 +849,141 @@
     
     <!-- Barcode Scanner Library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    
+    <script>
+        // Define functions globally at the top
+        window.startOnboarding = function() {
+            console.log('Starting onboarding...');
+            
+            try {
+                const welcomeScreen = document.getElementById('welcome-splash');
+                const nameScreen = document.getElementById('name-input-screen');
+                
+                if (!welcomeScreen || !nameScreen) {
+                    console.error('Screen elements not found');
+                    return;
+                }
+                
+                welcomeScreen.classList.add('slide-left');
+                
+                setTimeout(() => {
+                    welcomeScreen.style.display = 'none';
+                    nameScreen.style.display = 'flex';
+                    
+                    // Focus on name input
+                    setTimeout(() => {
+                        const nameInput = document.getElementById('user-name-input');
+                        if (nameInput) {
+                            nameInput.focus();
+                        }
+                    }, 300);
+                }, 500);
+                
+            } catch (error) {
+                console.error('Error in startOnboarding:', error);
+                // Fallback: just hide splash and show main app
+                window.hideSplashScreens();
+                window.updateUserInterface();
+            }
+        };
+
+        window.skipToApp = function() {
+            console.log('Skipping to app...');
+            try {
+                window.completeOnboarding();
+            } catch (error) {
+                console.error('Error in skipToApp:', error);
+                window.hideSplashScreens();
+                window.updateUserInterface();
+            }
+        };
+
+        window.saveName = function() {
+            const name = document.getElementById('user-name-input').value.trim();
+            if (name) {
+                window.userState.userName = name;
+                
+                document.getElementById('name-input-screen').classList.add('slide-left');
+                setTimeout(() => {
+                    document.getElementById('name-input-screen').style.display = 'none';
+                    document.getElementById('dietary-setup-screen').style.display = 'flex';
+                }, 500);
+            }
+        };
+
+        window.skipName = function() {
+            document.getElementById('name-input-screen').classList.add('slide-left');
+            setTimeout(() => {
+                document.getElementById('name-input-screen').style.display = 'none';
+                document.getElementById('dietary-setup-screen').style.display = 'flex';
+            }, 500);
+        };
+
+        window.toggleSplashPreference = function(card, preference) {
+            card.classList.toggle('selected');
+            
+            if (!window.onboardingPreferences) {
+                window.onboardingPreferences = [];
+            }
+            
+            if (window.onboardingPreferences.includes(preference)) {
+                window.onboardingPreferences = window.onboardingPreferences.filter(p => p !== preference);
+            } else {
+                window.onboardingPreferences.push(preference);
+            }
+            
+            // Add haptic feedback if available
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        };
+
+        window.completeOnboarding = function() {
+            // Save onboarding preferences to user state
+            if (!window.userState) {
+                window.userState = {
+                    userName: '',
+                    isFirstTime: true,
+                    preferences: [],
+                    points: 0,
+                    scanCount: 0,
+                    level: 'FRESH',
+                    streak: 1,
+                    pantryItems: []
+                };
+            }
+            
+            window.userState.preferences = [...(window.onboardingPreferences || [])];
+            window.userState.isFirstTime = false;
+            
+            // Mark onboarding complete
+            localStorage.setItem('scanchef_firstTime', 'false');
+            window.saveUserState();
+            
+            // Animate out splash screen
+            document.getElementById('dietary-setup-screen').classList.add('fade-out');
+            
+            setTimeout(() => {
+                window.hideSplashScreens();
+                window.updateUserInterface();
+                
+                // Show welcome notification with user's name
+                const welcomeMessage = window.userState.userName 
+                    ? `🎉 Welcome ${window.userState.userName}! Ready to scan your first product?`
+                    : '🎉 Welcome to ScanChef! Ready to scan your first product?';
+                
+                setTimeout(() => {
+                    window.showNotification(welcomeMessage);
+                }, 1000);
+            }, 800);
+        };
+
+        window.hideSplashScreens = function() {
+            document.getElementById('welcome-splash').style.display = 'none';
+            document.getElementById('name-input-screen').style.display = 'none';
+            document.getElementById('dietary-setup-screen').style.display = 'none';
+        };
+    </script>
     
     <style>
         * {
@@ -2017,7 +2152,7 @@
                 </button>
                 
                 <!-- Skip Option -->
-                <button class="splash-skip-btn" onclick="skipToApp()">
+                <button class="splash-skip-btn" onclick="skipToApp()" id="skip-setup-btn">
                     Skip Setup
                 </button>
             </div>
