@@ -1991,11 +1991,12 @@
         }
 
         .splash-continue-btn:disabled {
-            background: rgba(255, 255, 255, 0.3);
-            color: rgba(255, 255, 255, 0.7);
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
+            background: rgba(255, 255, 255, 0.3) !important;
+            color: rgba(255, 255, 255, 0.7) !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+            pointer-events: none !important;
         }
 
         .splash-skip-btn {
@@ -2245,11 +2246,11 @@
                     </div>
                 </div>
                 
-                <button class="splash-continue-btn" onclick="window.saveName()" id="name-continue-btn">
+                <button class="splash-continue-btn" onclick="alert('Button clicked!'); window.saveName();" id="name-continue-btn" style="pointer-events: auto; z-index: 9999;">
                     Continue
                 </button>
                 
-                <button class="splash-skip-btn" onclick="skipName()">
+                <button class="splash-skip-btn" onclick="window.skipName()" id="skip-name-btn">
                     Maybe Later
                 </button>
             </div>
