@@ -899,15 +899,74 @@
         };
 
         window.saveName = function() {
-            const name = document.getElementById('user-name-input').value.trim();
+            console.log('Saving name...');
+            const nameInput = document.getElementById('user-name-input');
+            const name = nameInput ? nameInput.value.trim() : '';
+            
+            console.log('Name entered:', name);
+            
             if (name) {
                 window.userState.userName = name;
+                console.log('Name saved to userState:', window.userState.userName);
                 
-                document.getElementById('name-input-screen').classList.add('slide-left');
-                setTimeout(() => {
-                    document.getElementById('name-input-screen').style.display = 'none';
-                    document.getElementById('dietary-setup-screen').style.display = 'flex';
-                }, 500);
+                const nameScreen = document.getElementById('name-input-screen');
+                const dietaryScreen = document.getElementById('dietary-setup-screen');
+                
+                if (nameScreen && dietaryScreen) {
+                    nameScreen.classList.add('slide-left');
+                    setTimeout(() => {
+                        nameScreen.style.display = 'none';
+                        dietaryScreen.style.display = 'flex';
+                        console.log('Switched to dietary setup screen');
+                    }, 500);
+                } else {
+                    console.error('Screen elements not found');
+                }
+            } else {
+                console.log('No name entered');
+            }
+        };
+
+        // Add input validation and enable/disable continue button
+        window.setupNameInput = function() {
+            const nameInput = document.getElementById('user-name-input');
+            const continueBtn = document.getElementById('name-continue-btn');
+            
+            if (nameInput && continueBtn) {
+                console.log('Setting up name input handlers');
+                
+                // Enable/disable button based on input
+                nameInput.addEventListener('input', function() {
+                    const name = this.value.trim();
+                    console.log('Name input changed:', name);
+                    
+                    if (name.length > 0) {
+                        continueBtn.disabled = false;
+                        continueBtn.style.opacity = '1';
+                    } else {
+                        continueBtn.disabled = true;
+                        continueBtn.style.opacity = '0.5';
+                    }
+                });
+                
+                // Handle Enter key
+                nameInput.addEventListener('keydown', function(event) {
+                    if (event.key === 'Enter' && this.value.trim()) {
+                        console.log('Enter pressed, saving name');
+                        window.saveName();
+                    }
+                });
+                
+                // Add click handler to continue button
+                continueBtn.addEventListener('click', function() {
+                    console.log('Continue button clicked');
+                    window.saveName();
+                });
+                
+                // Also add onclick as backup
+                continueBtn.onclick = window.saveName;
+            } else {
+                console.error('Name input elements not found');
             }
         };
 
